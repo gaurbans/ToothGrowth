@@ -1,0 +1,60 @@
+---
+output: pdf_document
+---
+# Statistical Inference Course Project
+## Statistical Analysis of the the Tooth Growth Database in R
+### Author: Gaurav Bansal 
+
+In this exercise, we'll examine the ToothGrowth database in the Datasets package in R. We'll develop a 95% confidence interval to compare tooth growth by supp and dose. 
+
+Let's begin by loading the data and plotting tooth length by dose for each supplement. 
+```{r toothgrowth}
+library(datasets)
+library(ggplot2)
+data(ToothGrowth)
+ggplot(ToothGrowth, aes(x=dose, y=len, color=supp)) + 
+  geom_point(size=3) + 
+  labs(x="Dose", y="Tooth Length", color="Supplement") + 
+  theme(legend.position=c(0.8, 0.2))
+```
+
+Now let's perform some T tests on the data to see the effects of supplement and dose. To do this, we need to break up the data into groups arranged by supp and dose. 
+```{r subsets}
+vc5 <- subset(ToothGrowth, supp=="VC" & dose==0.5)
+vc1 <- subset(ToothGrowth, supp=="VC" & dose==1)
+vc2 <- subset(ToothGrowth, supp=="VC" & dose==2)
+oj5 <- subset(ToothGrowth, supp=="OJ" & dose==0.5)
+oj1 <- subset(ToothGrowth, supp=="OJ" & dose==1)
+oj2 <- subset(ToothGrowth, supp=="OJ" & dose==2)
+```
+Now let's run T tests on the three groups to see differences in tooth length between ascorbic acid (vc) and orange juice (oj) at different doses. We will assume the data are NOT paired. 
+```{r ttests}
+t.test(vc5$len, oj5$len)
+t.test(vc1$len, oj1$len)
+t.test(vc2$len, oj2$len)
+```
+From the T tests shown above, we see that at the lower two doses--0.5 and 1.0--the supplement makes a significant impact. This is because the 95 percent confidence interval does not contain 0, which means we reject the null hypothesis in favor of the alternative hypothesis. However, at the 2.0 dose, this does not hold true. In this case we fail to reject the null hypothesis. 
+
+Let's take a look at the impact on tooth growth of dose alone, regardless of supplement.
+```{r dosettests}
+half <- subset(ToothGrowth, dose==0.5)
+one <- subset(ToothGrowth, dose==1)
+two <- subset(ToothGrowth, dose==2)
+t.test(one$len, half$len)
+t.test(two$len, one$len)
+```
+Here it's clear that increasing the dose from 0.5 to 1 and then from 1 to 2 makes a significant impact on tooth growth, regardless of supplement, because the 95 percent confidence interval for both T tests does not contain 0. This means we accept the alternative hypothesis that the difference in means is not equal to zero. The very low p-value also confirms that we reject the null hypothesis in favor of the alternative hypothesis. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
